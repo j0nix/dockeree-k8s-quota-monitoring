@@ -1,0 +1,99 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: resourcequotas-reader
+rules:
+- apiGroups:
+  - ""
+  resources: ["resourcequotas", "nodes"]
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    subjectName: monitoring
+  name: monitoring:resourcequotas-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: resourcequotas-reader
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: monitoring
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: k8s-quota-moniroring
+  namespace: default
+spec:
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: k8s-quota-moniroring
+      env: prod
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-quota-moniroring
+        env: prod
+    spec:
+      containers:
+      - name: k8s-quota-moniroring
+        image: registry/k8s-quota-monitoring:latest
+        resources:           
+          limits:             
+            cpu: 500m
+            memory: 100Mi
+        env:
+          - name: ELASTIC_HOST
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: ELASTIC_HOST
+
+          - name: ELASTIC_PORT
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: ELASTIC_PORT
+
+          - name: ELASTIC_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: ELASTIC_USERNAME
+
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: ELASTIC_PASSWORD
+
+          - name: DOCKEREE_HOST
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: DOCKEREE_HOST
+
+          - name: DOCKEREE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: DOCKEREE_USERNAME
+
+          - name: DOCKEREE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: monitoring
+                key: DOCKEREE_PASSWORD
