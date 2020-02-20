@@ -17,13 +17,19 @@ Calculates cluster and namespace utilization before sending the result as json t
 
 Requires the following environment variables to be set
 
-> DOCKEREE_USERNAME
-> DOCKEREE_PASSWORD
-> DOCKEREE_HOST
-> ELASTIC_USERNAME
-> ELASTIC_PASSWORD
-> ELASTIC_HOST
-> ELASTIC_PORT
+>DOCKEREE_USERNAME
+
+>DOCKEREE_PASSWORD
+
+>DOCKEREE_HOST
+
+>ELASTIC_USERNAME
+
+>ELASTIC_PASSWORD
+
+>ELASTIC_HOST
+
+>ELASTIC_PORT
  
  Preferably with kubernetes secrets. Review `k8s/k8s_exaxmple.yaml` for example. 
  
